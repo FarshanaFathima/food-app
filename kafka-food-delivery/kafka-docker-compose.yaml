@@ -1,0 +1,100 @@
+version: '3'
+services:
+  kafka1:
+    image: confluentinc/cp-kafka:7.2.1
+    container_name: kafka1
+    user: root
+    ports:
+      - "29093:29093"
+    restart: always
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT, SASL_PLAINTEXT:SASL_PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://kafka1:9093,CONTROLLER://kafka1:9094, SASL_PLAINTEXT://:29093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka1:9093, SASL_PLAINTEXT://35.207.206.173:29093
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:9094'
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CONFLUENT_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/kafka_server_jaas.conf"
+      KAFKA_INTER_BROKER_LISTENER_NAME: SASL_PLAINTEXT
+      KAFKA_SASL_ENABLED_MECHANISMS: PLAIN
+      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: PLAIN
+    networks:
+      - foodNetwork
+    volumes:
+      - ../kafka1_logs:/var/log
+      - ./run_workaround.sh:/tmp/run_workaround.sh
+      - ./kafka_server_jaas.conf:/etc/kafka/kafka_server_jaas.conf
+      - ../kafka1/data:/var/lib/kafka/data
+    command: ["bash", "-c", "/tmp/run_workaround.sh && /etc/confluent/docker/run | tee >(grep 'ERROR' > /var/log/error.log) >(grep -v 'ERROR' > /var/log/other.log) > /dev/null"]
+  
+  kafka-init:
+    image: confluentinc/cp-kafka:7.2.1
+    depends_on:
+      - kafka1
+    networks:
+      - foodNetwork
+    entrypoint: [ '/bin/sh', '-c' ]
+    command: |
+      "
+      # blocks until kafka is reachable
+      kafka-topics --bootstrap-server kafka1:9093 --list
+
+      echo -e 'Creating kafka topics'
+      kafka-topics --bootstrap-server kafka1:9093 --create --if-not-exists --topic order_details --replication-factor 1 --partitions 1
+      kafka-topics --bootstrap-server kafka1:9093 --create --if-not-exists --topic order_confirmed --replication-factor 1 --partitions 1
+      
+      echo -e 'Successfully created the following topics:'
+      kafka-topics --bootstrap-server kafka1:9093 --list
+      "
+
+  control-center:
+    image: confluentinc/cp-enterprise-control-center${CONFLUENT_VERSION_TAG}
+    hostname: control-center
+    container_name: control-center
+    depends_on:
+      - kafka1
+    ports:
+      - "9021:9021"
+    restart: always
+    environment:
+      CONTROL_CENTER_BOOTSTRAP_SERVERS: 'kafka1:9093'
+      CONTROL_CENTER_REPLICATION_FACTOR: 1
+      CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS: 1
+      CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS: 1
+      CONFLUENT_METRICS_TOPIC_REPLICATION: 1
+      PORT: 9021
+      CONTROL_CENTER_REST_AUTHENTICATION_METHOD: BASIC
+      CONTROL_CENTER_REST_AUTHENTICATION_REALM: c3
+      CONTROL_CENTER_REST_AUTHENTICATION_ROLES: Administrators,Restricted
+      # CONTROL_CENTER_REST_RESTRICTED_ROLES: Restricted
+      CONTROL_CENTER_AUTH_RESTRICTED_ROLES: Restricted
+      CONTROL_CENTER_OPTS: "-Djava.security.auth.login.config=/etc/confluent-control-center/propertyfile.conf"
+      # CONTROL_CENTER_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
+    networks:
+      - foodNetwork
+    volumes:
+      - ./login.properties:/tmp/confluent/login.properties
+  # schema-registry:
+  #   image: confluentinc/cp-schema-registry
+  #   hostname: schema-registry
+  #   container_name: schema-registry
+  #   depends_on:
+  #     - kafka1
+  #   ports:
+  #     - "8081:8081"
+  #   environment:
+  #     SCHEMA_REGISTRY_HOST_NAME: schema-registry
+  #     SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'kafka1:9092'
+
+networks:
+  foodNetwork:
+    external: true
