@@ -1,35 +1,48 @@
 version: '2'
 services:
-  order_backend:
-    container_name: order_backend
+  # order_backend:
+  #   container_name: order_backend
+  #   build:
+  #     context: ./
+  #     dockerfile: ./order_backend/Dockerfile
+  #   # restart: always
+  #   environment:
+  #     - CONN_STR=mongodb://farshana:farshana@mongodb:27017/?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false
+  #     - DATABASE=food-db 
+  #     - COLLECTION=menu-rate
+  #   networks:
+  #     - foodNetwork
+
+  # email-backend:
+  #   container_name: email-backend
+  #   build:
+  #     context: ./
+  #     dockerfile: ./email-backend/Dockerfile
+  #   networks:
+  #     - foodNetwork
+  
+  # transaction:
+  #   container_name: transaction
+  #   build:
+  #     context: ./
+  #     dockerfile: ./transaction/Dockerfile
+  #   networks:
+  #     - foodNetwork
+  #   # restart: always
+
+  api:
+    container_name: api
     build:
       context: ./
-      dockerfile: ./order_backend/Dockerfile
-    # restart: always
+      dockerfile: ./api/Dockerfile
     environment:
       - CONN_STR=mongodb://farshana:farshana@mongodb:27017/?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false
-      - DATABASE=food-db 
-      - COLLECTION=menu-rate
+      - DATABASE=food-db
+      - COLLECTION=orders
+    ports:
+      - '8000:8000'
     networks:
       - foodNetwork
-
-  email-backend:
-    container_name: email-backend
-    build:
-      context: ./
-      dockerfile: ./email-backend/Dockerfile
-    networks:
-      - foodNetwork
-  
-  transaction:
-    container_name: transaction
-    build:
-      context: ./
-      dockerfile: ./transaction/Dockerfile
-    networks:
-      - foodNetwork
-    # restart: always
-
 networks:
   foodNetwork:
     external: true
