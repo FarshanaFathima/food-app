@@ -41,7 +41,7 @@ class Order(BaseModel):
     
 app = FastAPI(title="Food Ordering API", summary="A mini project to understand and apply API concepts")
 
-@app.post("/food-order/", response_description="Place a new Order", response_model= Order, status_code=status.HTTP_201_CREATED)
+@app.post("/food-order/", response_description="Place a new Order", status_code=status.HTTP_201_CREATED)
 async def place_order(order:Order=Body(...)):
     """Place a new order
 
@@ -52,6 +52,5 @@ async def place_order(order:Order=Body(...)):
     data = order.model_dump()
     order.validate(data)
     new_order = await order_collection.insert_one(data)
-    id_ = order_collection.find_one({"_id": new_order.inserted_id})
-    return id_   
+    return {"id_": str(new_order.inserted_id)}
     
