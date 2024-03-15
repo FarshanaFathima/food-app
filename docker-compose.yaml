@@ -35,14 +35,12 @@ services:
     build:
       context: ./
       dockerfile: ./api/Dockerfile
-    environment:
-      - CONN_STR=mongodb://farshana:farshana@mongodb:27017/?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false
-      - DATABASE=food-db
-      - COLLECTION=orders
     ports:
       - '8000:8000'
     networks:
       - foodNetwork
+    env_file:
+      - .env
 networks:
   foodNetwork:
     external: true

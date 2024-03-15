@@ -1,27 +1,8 @@
-# from typing import Union
-
-# from enum import Enum
 from fastapi import FastAPI, status, Body, HTTPException
 import motor.motor_asyncio
 from pydantic import BaseModel, Field, ConfigDict, field_validator, model_validator
 import os
 
-# class Beverages(str, Enum):
-#     PEPSI="pepsi"
-#     FANTA="fanta"
-#     COKE="coke"
-
-# app = FastAPI()
-
-
-# @app.get("/status")
-# async def check_status():
-#     return {"Hello": "World"}
-
-# @app.get("/food-app/order-beverages")
-# async def get_customer_name(beverage:Beverages):
-#     print(beverage)
-#     return [{"id":1, "name":"fars"}, {"id":2, "name":"shah"}]
 CONN_STR, DB, COLLECTION = os.getenv("CONN_STR"), os.getenv("DATABASE"), os.getenv("COLLECTION")
 client = motor.motor_asyncio.AsyncIOMotorClient(CONN_STR)
 db = client[DB]

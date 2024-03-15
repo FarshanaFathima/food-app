@@ -2,3 +2,4 @@ kafka1_logs/*
 kafka1/*
 */mongo-data/*
 launch.json
+*.env
