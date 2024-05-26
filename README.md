@@ -59,12 +59,6 @@
     ├── Dockerfile
     ├── requirements.txt
     └── transaction.py
-<ul>
-    <li><code>app/main.py</code>: The main entry point of the FastAPI application.</li>
-    <li><code>app/models.py</code>: Contains the database models.</li>
-    <li><code>app/schemas.py</code>: Defines the request and response schemas.</li>
-    <li><code>app/kafka_producer.py</code>: Handles Kafka message production.</li>
-</ul>
 
 
 <h2 id="acknowledgements">Acknowledgements</h2>
