@@ -32,7 +32,7 @@
 
 
 <h2 id="project-structure">Project Structure</h2>
-<pre><code>fastapi-kafka-docker/
+<pre><code>food-app/
 ├── api
 │   ├── Dockerfile
 │   ├── main.py
