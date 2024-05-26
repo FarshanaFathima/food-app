@@ -16,11 +16,7 @@
 <ul>
     <li><a href="#project-overview">Project Overview</a></li>
     <li><a href="#technologies-used">Technologies Used</a></li>
-    <li><a href="#setup-instructions">Setup Instructions</a></li>
-    <li><a href="#usage">Usage</a></li>
     <li><a href="#project-structure">Project Structure</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
     <li><a href="#acknowledgements">Acknowledgements</a></li>
 </ul>
 
@@ -34,47 +30,35 @@
     <li><strong>Docker</strong>: A set of platform-as-a-service products that use OS-level virtualization to deliver software in packages called containers.</li>
 </ul>
 
-<h2 id="setup-instructions">Setup Instructions</h2>
-<p>To get this project up and running on your local machine, follow these steps:</p>
-<ol>
-    <li><strong>Clone the repository</strong>
-        <pre><code>git clone https://github.com/yourusername/fastapi-kafka-docker.git
-cd fastapi-kafka-docker</code></pre>
-    </li>
-    <li><strong>Build and Run Docker Containers</strong>
-        <p>Make sure you have Docker installed on your machine. Then, run:</p>
-        <pre><code>docker-compose up --build</code></pre>
-    </li>
-    <li><strong>Verify the setup</strong>
-        <p>Once the containers are up and running, you can access the FastAPI documentation at <code>http://localhost:8000/docs</code>.</p>
-    </li>
-</ol>
-
-<h2 id="usage">Usage</h2>
-<ul>
-    <li><strong>API Endpoints</strong>:
-        <ul>
-            <li><code>GET /items/</code>: Fetch a list of items.</li>
-            <li><code>POST /items/</code>: Create a new item.</li>
-        </ul>
-    </li>
-    <li><strong>Kafka Topics</strong>:
-        <ul>
-            <li><code>items-topic</code>: Used for publishing and consuming item events.</li>
-        </ul>
-    </li>
-</ul>
 
 <h2 id="project-structure">Project Structure</h2>
 <pre><code>fastapi-kafka-docker/
-├── app/
-│   ├── main.py
-│   ├── models.py
-│   ├── schemas.py
-│   └── kafka_producer.py
-├── docker-compose.yml
-├── Dockerfile
-└── README.md</code></pre>
+├── api
+│   ├── Dockerfile
+│   ├── main.py
+│   └── requirements.txt
+├── docker-compose.yaml
+├── email-backend
+│   ├── Dockerfile
+│   ├── email-backend.py
+│   └── requirements.txt
+├── kafka-food-delivery
+│   ├── kafka-docker-compose.yaml
+│   ├── kafka_server_jaas.conf
+│   ├── login.properties
+│   └── run_workaround.sh
+├── mongo_container
+│   ├── docker-compose.yaml
+│   └── mongo-dat
+├── order_backend
+│   ├── Dockerfile
+│   ├── __init__.py
+│   ├── main.py
+│   └── requirements.txt
+└── transaction
+    ├── Dockerfile
+    ├── requirements.txt
+    └── transaction.py
 <ul>
     <li><code>app/main.py</code>: The main entry point of the FastAPI application.</li>
     <li><code>app/models.py</code>: Contains the database models.</li>
@@ -82,11 +66,6 @@ cd fastapi-kafka-docker</code></pre>
     <li><code>app/kafka_producer.py</code>: Handles Kafka message production.</li>
 </ul>
 
-<h2 id="contributing">Contributing</h2>
-<p>Contributions are welcome! Please fork the repository and submit a pull request with your changes. Ensure that your code adheres to the project's coding standards and includes appropriate tests.</p>
-
-<h2 id="license">License</h2>
-<p>This project is licensed under the MIT License - see the <a href="LICENSE">LICENSE</a> file for details.</p>
 
 <h2 id="acknowledgements">Acknowledgements</h2>
 <p>Thanks to the FastAPI and Kafka communities for their excellent documentation and support.</p>
